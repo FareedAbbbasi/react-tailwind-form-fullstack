@@ -1,9 +1,34 @@
 import React from "react";
 import { Table } from "flowbite-react";
 import axios from "axios";
+import { editeuserData, useGetAllData } from "./Form";
 
-const EnquiryList = (data) => {
-    console.log(data)
+const EnquiryList = ({ Swal }) => {
+  const data = useGetAllData();
+  let deleteRow = (delId) => {
+    Swal.fire({
+      title: "Do you want to delete this?",
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: "Yes",
+      denyButtonText: `No`,
+    }).then((result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+        axios
+          .delete(`http://localhost:8000/api/website/enquiry/delete/${delId}`)
+          .then((res) => {
+            //write the logic to view all the userdata.
+
+          });
+      } else if (result.isDenied) {
+        Swal.fire("Changes are not saved", "", "info");
+      }
+    });
+  };
+
+  editeuserData();
+
   return (
     <div className="bg-gray-200 p-10 mt-[70px] mr-[50px]">
       <h2 className="text-[20px] font-bold p-4">Enquiry List</h2>
@@ -18,32 +43,47 @@ const EnquiryList = (data) => {
             <Table.HeadCell>Delte</Table.HeadCell>
             <Table.HeadCell>Edit</Table.HeadCell>
           </Table.Head>
+
           <Table.Body className="divide-y">
-            <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
-              <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-                {"01"}
-              </Table.Cell>
-              <Table.Cell>Abbas</Table.Cell>
-              <Table.Cell>abc@gmail.com</Table.Cell>
-              <Table.Cell>03555555555</Table.Cell>
-              <Table.Cell>Hey</Table.Cell>
-              <Table.Cell>
-                <a
-                  href="#"
-                  className="font-medium text-cyan-600 hover:underline dark:text-cyan-500"
-                >
-                  Delete
-                </a>
-              </Table.Cell>
-              <Table.Cell>
-                <a
-                  href="#"
-                  className="font-medium text-cyan-600 hover:underline dark:text-cyan-500"
-                >
-                  Edit
-                </a>
-              </Table.Cell>
-            </Table.Row>
+            {data.length >= 1 ? (
+              data.map((item, index) => {
+                return (
+                  <tr
+                    key={index}
+                    className="bg-white dark:border-gray-700 dark:bg-gray-800"
+                  >
+                    <Table.Cell>{index + 1}</Table.Cell>
+                    <Table.Cell>{item.name}</Table.Cell>
+                    <Table.Cell>{item.email}</Table.Cell>
+                    <Table.Cell>{item.phone}</Table.Cell>
+                    <Table.Cell>{item.message}</Table.Cell>
+                    <Table.Cell>
+                      <button
+                        // onClick={() => deleteRow(item._id)}
+                        className="bg-red-500 text-white px-4 py-1 rounded-md"
+                        onClick={() => deleteRow(item._id)}
+                      >
+                        Delete
+                      </button>
+                    </Table.Cell>
+                    <Table.Cell>
+                      <button
+                        onClick={()=> editeRow(item._id)}
+                        className="bg-red-500 text-white px-4 py-1 rounded-md"
+                      >
+                        Edite
+                      </button>
+                    </Table.Cell>
+                  </tr>
+                );
+              })
+            ) : (
+              <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
+                <Table.Cell colSpan={7} className="text-center">
+                  No Data Found
+                </Table.Cell>
+              </Table.Row>
+            )}
           </Table.Body>
         </Table>
       </div>

@@ -12,10 +12,7 @@ function App() {
   return (
     <>
       <div>
-        <div className="grid grid-cols-[30%_auto] gap-10">
         <Form />
-        <EnquiryList />
-        </div>
       </div>
     </>
   );
