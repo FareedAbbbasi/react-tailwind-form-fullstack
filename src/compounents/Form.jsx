@@ -3,61 +3,53 @@ import { Button, Checkbox, Label, TextInput, Textarea } from "flowbite-react";
 import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
 import EnquiryList from "./EnquiryList";
-import Swal from 'sweetalert2/dist/sweetalert2.js'
-import 'sweetalert2/src/sweetalert2.scss'
 
 export const useGetAllData = () => {
   const [data, setData] = useState([]);
+  const getAllEnquiries = async () => {
+    try {
+      const res = await axios.get(
+        "http://localhost:8000/api/website/enquiry/view"
+      );
+      setData(res.data.enquiryList);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
   useEffect(() => {
-    const getAllEnquiries = async () => {
-      try {
-        const res = await axios.get("http://localhost:8000/api/website/enquiry/view");
-        setData(res.data.enquiryList);
-        getAllEnquiries();
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
     getAllEnquiries();
   }, []); // Runs once on mount
 
-  return data; // Returns fetched data
+  const refresh = () => getAllEnquiries();
+
+  return { data, refresh }; // Returns fetched data
 };
 
-export const editeuserData = () => {
-  const [data, setData] = useState([]);
-  useEffect(() => {
-    const updateUser = async () => {
-      try {
-        const res =  await axios.put(`http://localhost:8000/api/website/enquiry/enquiryUpdate/${edite}`);
-        console.log(EnquiryList)
-        setData(res.data.enquiryList);
-      }catch (error) {
-        console.error("Error update a data:" , error)     
-      }
+export const useEditeuserData = () => {
+  const updateUser = async (id, data) => {
+    try {
+      const res = await axios.put(
+        `http://localhost:8000/api/website/enquiry/enquiryUpdate/${id}`,
+        data
+      );
+    } catch (error) {
+      console.error("Error update a data:", error);
     }
-    updateUser();
-  }, [])
-  return data
-}
+  };
+  return updateUser;
+};
 
-
-
-let form = () => {
-
-  let [formData, setFormData] = useState({
+const form = () => {
+  const [formData, setFormData] = useState({
     name: "",
     email: "",
     phone: "",
     message: "",
-    // _id: "",
+    _id: "",
   });
 
 
-
-  // const getValue = ()=>{}
-
-  let saveEnquiry = (e) => {
+  const saveEnquiry = (e) => {
     e.preventDefault();
     axios
       .post("http://localhost:8000/api/website/enquiry/insert", formData)
@@ -71,7 +63,6 @@ let form = () => {
       });
   };
 
-  
 
   // useEffect(() => {
   //   getAllEnquires();
@@ -155,7 +146,7 @@ let form = () => {
           </div>
         </form>
       </div>
-      <EnquiryList Swal={Swal}/>
+      <EnquiryList />
     </div>
   );
 };

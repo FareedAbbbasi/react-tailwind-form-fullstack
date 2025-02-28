@@ -1,10 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { Table } from "flowbite-react";
 import axios from "axios";
-import { editeuserData, useGetAllData } from "./Form";
+import Swal from 'sweetalert2/dist/sweetalert2.js'
+import 'sweetalert2/src/sweetalert2.scss'
 
-const EnquiryList = ({ Swal }) => {
-  const data = useGetAllData();
+const EnquiryList = () => {
   let deleteRow = (delId) => {
     Swal.fire({
       title: "Do you want to delete this?",
@@ -19,15 +19,13 @@ const EnquiryList = ({ Swal }) => {
           .delete(`http://localhost:8000/api/website/enquiry/delete/${delId}`)
           .then((res) => {
             //write the logic to view all the userdata.
-
+            getAllEnquiries()
           });
       } else if (result.isDenied) {
         Swal.fire("Changes are not saved", "", "info");
       }
     });
   };
-
-  editeuserData();
 
   return (
     <div className="bg-gray-200 p-10 mt-[70px] mr-[50px]">
@@ -68,7 +66,7 @@ const EnquiryList = ({ Swal }) => {
                     </Table.Cell>
                     <Table.Cell>
                       <button
-                        onClick={()=> editeRow(item._id)}
+                        // onClick={()=> editeRow(item._id)}
                         className="bg-red-500 text-white px-4 py-1 rounded-md"
                       >
                         Edite
